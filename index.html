@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>부모님의 남은 시간</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="site-header">
+    <h1 class="logo">남은 시간</h1>
+    <p class="tagline">평균 수명과 생활 습관을 바탕으로 한 단순 추정입니다. 의학적 진단이 아닙니다.</p>
+  </header>
+
+  <main class="main">
+    <!-- Step 1: 기본 정보 -->
+    <section id="step-birth" class="panel step active" data-step="1">
+      <h2>1. 부모님 정보</h2>
+      <p class="lead">생년월일을 기준으로 대한민국 통계청 발표와 유사한 기대수명을 출발점으로 삼습니다.</p>
+      <form id="form-birth" class="form">
+        <label class="field">
+          <span class="label">부모님 호칭 또는 이름 <span class="optional">(선택)</span></span>
+          <input type="text" id="parent-name" name="parentName" maxlength="40" placeholder="예: 아버지" autocomplete="nickname" />
+        </label>
+        <label class="field">
+          <span class="label">생년월일 <span class="req">*</span></span>
+          <input type="date" id="birth-date" name="birthDate" required max="" />
+        </label>
+        <fieldset class="field fieldset">
+          <legend class="label">성별 <span class="req">*</span></legend>
+          <div class="radio-row">
+            <label class="radio"><input type="radio" name="gender" value="male" required /> 남성</label>
+            <label class="radio"><input type="radio" name="gender" value="female" /> 여성</label>
+          </div>
+        </fieldset>
+        <p class="hint">기대수명 출발값: 남성 약 80세, 여성 약 86세(근사치). 설문에서 가감됩니다.</p>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">다음: 생활 습관 설문</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Step 2: 설문 -->
+    <section id="step-survey" class="panel step" data-step="2">
+      <h2>2. 생활 습관 설문</h2>
+      <p class="lead">각 문항은 인구집단 연구를 참고한 <strong>교육용 가중치</strong>입니다. 개인에게 그대로 적용되지 않을 수 있습니다.</p>
+      <form id="form-survey" class="form survey-form"></form>
+      <div class="actions actions-split">
+        <button type="button" id="btn-skip-survey" class="btn btn-ghost">설문 건너뛰기 (기본 기대수명만)</button>
+        <button type="submit" form="form-survey" class="btn btn-primary">결과 보기</button>
+      </div>
+    </section>
+
+    <!-- Step 3: 결과 -->
+    <section id="step-result" class="panel step" data-step="3">
+      <h2 id="result-title">추정 남은 시간</h2>
+      <p id="result-sub" class="lead result-sub"></p>
+
+      <div class="countdown" role="timer" aria-live="polite" aria-atomic="true">
+        <div class="cd-block">
+          <span class="cd-value" id="cd-days">00</span>
+          <span class="cd-unit">일</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block">
+          <span class="cd-value" id="cd-hours">00</span>
+          <span class="cd-unit">시</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block">
+          <span class="cd-value" id="cd-mins">00</span>
+          <span class="cd-unit">분</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block">
+          <span class="cd-value" id="cd-secs">00</span>
+          <span class="cd-unit">초</span>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">추정 잔여 수명</span>
+          <span class="stat-value" id="stat-years-left">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">지금까지 살아온 시간</span>
+          <span class="stat-value" id="stat-lived">—</span>
+        </div>
+        <div class="stat-card stat-card-wide">
+          <span class="stat-label">설문 반영 (기대수명 가감)</span>
+          <span class="stat-value" id="stat-delta">—</span>
+        </div>
+      </div>
+
+      <div class="life-bar-wrap">
+        <span class="life-bar-label">인생 타임라인 (추정)</span>
+        <div class="life-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="life-bar">
+          <div class="life-bar-fill" id="life-bar-fill"></div>
+        </div>
+        <span class="life-bar-captions"><span>출생</span><span id="life-pct">0%</span><span>추정 종료</span></span>
+      </div>
+
+      <blockquote class="disclaimer">
+        이 화면은 경각심을 위한 비의료적 시뮬레이션입니다. 건강·법률·재무 결정에 사용하지 마세요. 부모님께 말 한마디라도 더 하려면 오늘이 가장 이른 날입니다.
+      </blockquote>
+
+      <div class="actions actions-split">
+        <button type="button" id="btn-edit" class="btn btn-ghost">정보 수정</button>
+        <button type="button" id="btn-reset" class="btn btn-danger">모든 데이터 삭제</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© 남은 시간 · 로컬 브라우저에만 저장됩니다.</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
